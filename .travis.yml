@@ -21,6 +21,9 @@ matrix:
   allow_failures:
     - haxe: development
 
+before_script:
+  - ldconfig
+
 script:
   - pushd lib
   - make all
