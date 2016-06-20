@@ -1,10 +1,12 @@
+sudo: false
+
 language: haxe
 
 haxe:
   - "3.2.1"
   - development
 
-sudo: false
+neko: "2.1.0"
 
 os:
   - linux
@@ -20,6 +22,12 @@ matrix:
     - haxe: development
 
 script:
+  - pushd lib
   - make all
+  - popd
+
+after_success:
+  - pushd lib
   - make install
   - make test
+  - popd
