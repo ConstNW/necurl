@@ -41,7 +41,7 @@ else
 	endif
 	CCFLAGS+= -I$(NEKOPATH)/include
 # CCFLAGS+= -ggdb
-	LDFLAGS+= -lneko
+	LDFLAGS+= -L$(NEKOPATH) -lneko
 endif
 
 all: clean build

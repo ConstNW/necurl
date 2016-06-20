@@ -1,4 +1,4 @@
-sudo: required
+sudo: false
 
 language: haxe
 
@@ -20,9 +20,6 @@ addons:
 matrix:
   allow_failures:
     - haxe: development
-
-before_script:
-  - sudo ldconfig
 
 script:
   - pushd lib
