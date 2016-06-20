@@ -1,33 +1,38 @@
 sudo: false
-
 language: haxe
-
 haxe:
-  - "3.2.1"
-  - development
-
-neko: "2.1.0"
-
+- 3.2.1
+- development
+neko: 2.1.0
 os:
-  - linux
-  - osx
- 
+- linux
+- osx
 addons:
   apt:
     packages:
-      - libcurl4-openssl-dev
-
+    - libcurl4-openssl-dev
 matrix:
   allow_failures:
-    - haxe: development
-
+  - haxe: development
 script:
-  - pushd lib
-  - make all
-  - popd
-
+- pushd lib
+- make all
+- popd
 after_success:
-  - pushd lib
-  - make install
-  - make test
-  - popd
+- pushd lib
+- make install
+- make test
+- popd
+deploy:
+  provider: releases
+  api_key:
+    secure: s2osWrLoccj6JMo9EVxj3vg2g23zohYPQKMBFL0UoBytH+sMNA4H5RWT2e7Bcf1oP34KEFHYBEJM9PlmOCC/aMvjqhMM8XHUEzkctfUvJiU2sixZCYVDegcFYB8sCQX1Rn3IBF7+hDhi39vB1gT3VLg+cyMNGrLs95fzIde2OT8P4Y/duXzOfUOUhDVVlzjvzLLfHX5tbACjNPj9wEtc+KUMmmKwjNOVpYczX2AmtuZqDREPHNaGiiqVy6uf99BLP1vUQ4k+h29Ies+bEVVVf0huQrpdbZXyuDOblZl7RpnFA2jjTPEmdZ3Un8IMdIK+NV8opmecy1J6JKt6st78a9MaOkbyGPg1jrXCrrKVhIlkvvxwatiQ+g0VcE/5/2GdizsfUp4U82ecSuoNgl0zuBngJv6NmV5RzYA/lKU8ezKoXyGp+vKPZU5nsgE++5ci060KzmIBXzybeIgkPZYXBDzYSAxCUPvSOP1xyrj+xhBSlUDyqZmjG10aa/Nk2VzMeUFTCpDac/gFE85+NhI7g6uiK/t1xh6VlVGmrFlHEEjzNcP++0QCgrPCisllN7RFKmHu7amislrUa98nzrzQ6J17dRAx1SLb360iGcamS/75wWsC2aV06Y5yBTgOpTtj22XupWuA3PZMDs/0UiREM8npFGhnsGZlb0HOkEsJpco=
+  file:
+  - ndll/Linux/necurl.ndll
+  - ndll/Linux64/necurl.ndll
+  - ndll/Mac/necurl.ndll
+  - ndll/Mac64/necurl.ndll
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: ConstNW/necurl
