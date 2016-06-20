@@ -1,0 +1,23 @@
+language: haxe
+
+haxe:
+  - "3.2.1"
+  - development
+
+sudo: false
+
+os:
+  - linux
+  - osx
+ 
+addons:
+  apt:
+    packages:
+      - libcurl4-openssl-dev
+
+matrix:
+  allow_failures:
+    - haxe: development
+
+script:
+  - make all

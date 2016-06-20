@@ -1,0 +1,13 @@
+{
+  "name": "necurl",
+  "url" : "https://github.com/constnw/necurl/",
+  "license": "MIT",
+  "tags": ["neko", "necurl", "curl"],
+  "description": "",
+  "version": "0.0.1",
+  "classPath": "src/",
+  "releasenote": "Initial release, everything is working correctly.",
+  "contributors": ["constnw"],
+  "dependencies": {
+  }
+}
