@@ -1,8 +1,6 @@
 sudo: false
 language: haxe
-haxe:
-- 3.2.1
-- development
+haxe: 3.2.1
 neko: 2.1.0
 os:
 - linux
@@ -11,9 +9,6 @@ addons:
   apt:
     packages:
     - libcurl4-openssl-dev
-matrix:
-  allow_failures:
-  - haxe: development
 script:
 - pushd lib
 - make all
@@ -36,3 +31,4 @@ deploy:
   overwrite: true
   on:
     repo: ConstNW/necurl
+    branch: master
