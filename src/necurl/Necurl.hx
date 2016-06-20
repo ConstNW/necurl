@@ -515,20 +515,20 @@ class Necurl
 	
 	inline public function handler( ) return h;
 	
-	private static var hxcurl_init = Lib.load("curl", "hxcurl_init", 0);
-	private static var hxcurl_close = Lib.load("curl", "hxcurl_close", 1);
-	private static var hxcurl_setopt = Lib.load("curl", "hxcurl_setopt", 3);
-	private static var hxcurl_exec = Lib.load("curl", "hxcurl_exec", 1);
+	private static var hxcurl_init = Lib.load("necurl", "hxcurl_init", 0);
+	private static var hxcurl_close = Lib.load("necurl", "hxcurl_close", 1);
+	private static var hxcurl_setopt = Lib.load("necurl", "hxcurl_setopt", 3);
+	private static var hxcurl_exec = Lib.load("necurl", "hxcurl_exec", 1);
 	
-	private static var hxcurl_setheader = Lib.load("curl", "hxcurl_setheader", 2);
+	private static var hxcurl_setheader = Lib.load("necurl", "hxcurl_setheader", 2);
 	
-	private static var hxcurl_error = Lib.load("curl", "hxcurl_error", 1);
-	private static var hxcurl_escape = Lib.load("curl", "hxcurl_escape", 2);
-	private static var hxcurl_getinfo = Lib.load("curl", "hxcurl_getinfo", 2);
+	private static var hxcurl_error = Lib.load("necurl", "hxcurl_error", 1);
+	private static var hxcurl_escape = Lib.load("necurl", "hxcurl_escape", 2);
+	private static var hxcurl_getinfo = Lib.load("necurl", "hxcurl_getinfo", 2);
 	
-	private static var hxcurl_set_cb_base = Lib.load("curl", "hxcurl_set_cb_base", 3);
-	private static var hxcurl_set_cb_ext = Lib.load("curl", "hxcurl_set_cb_ext", 3);
-	private static var hxcurl_set_cb_debug = Lib.load("curl", "hxcurl_set_cb_debug", 2);
+	private static var hxcurl_set_cb_base = Lib.load("necurl", "hxcurl_set_cb_base", 3);
+	private static var hxcurl_set_cb_ext = Lib.load("necurl", "hxcurl_set_cb_ext", 3);
+	private static var hxcurl_set_cb_debug = Lib.load("necurl", "hxcurl_set_cb_debug", 2);
 }
 
 // Share
@@ -575,9 +575,9 @@ class NecurlShare
 		hxcurl_setopt(n.handler(), CurlOpt.SHARE, h);
 	}
 	
-	private static var hxcurl_share_init = Lib.load("curl", "hxcurl_share_init", 0);
-	private static var hxcurl_share_setopt = Lib.load("curl", "hxcurl_share_setopt", 3);
-	private static var hxcurl_share_delete = Lib.load("curl", "hxcurl_share_delete", 1);
+	private static var hxcurl_share_init = Lib.load("necurl", "hxcurl_share_init", 0);
+	private static var hxcurl_share_setopt = Lib.load("necurl", "hxcurl_share_setopt", 3);
+	private static var hxcurl_share_delete = Lib.load("necurl", "hxcurl_share_delete", 1);
 	
-	private static var hxcurl_setopt = Lib.load("curl", "hxcurl_setopt", 3);
+	private static var hxcurl_setopt = Lib.load("necurl", "hxcurl_setopt", 3);
 }

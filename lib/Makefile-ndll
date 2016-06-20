@@ -60,6 +60,9 @@ endif
 install:
 	cp $(OUT) $(NEKOPATH)/$(PROJECT).ndll
 
+test:
+	cd ../test; haxe test.hxml; cd bin; neko test.n
+
 cleanbuild: clean build
 
 clean:
