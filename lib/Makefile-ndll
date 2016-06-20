@@ -39,7 +39,7 @@ else
 	ifeq ($(PLATFORM), Linux64)
 		CCFLAGS+= -fPIC
 	endif
-	CCFLAGS+= -I$(NEKOPATH)\include
+	CCFLAGS+= -I$(NEKOPATH)/include
 # CCFLAGS+= -ggdb
 	LDFLAGS+= -lneko
 endif
