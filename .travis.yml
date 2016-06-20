@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 
 language: haxe
 
@@ -22,7 +22,7 @@ matrix:
     - haxe: development
 
 before_script:
-  - ldconfig
+  - sudo ldconfig
 
 script:
   - pushd lib
