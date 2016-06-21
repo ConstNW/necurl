@@ -23,24 +23,22 @@ OBJ_FILES := $(addprefix $(OBJ_DIR)/,$(notdir $(CPP_FILES:.cpp=.o))) $(addprefix
 OUT=../ndll/$(PLATFORM)/$(PROJECT).ndll
 
 ifndef CCFLAGS
-	CCFLAGS=-shared
+	CCFLAGS=-shared -Wall
 else
-	CCFLAGS+=-shared
+	CCFLAGS+=-shared -Wall
 endif
 
 LDFLAGS=-shared
 
 ifeq ($(PLATFORM), $(filter $(PLATFORM), Windows Windows64))
-	CCFLAGS+= -I$(NEKOPATH)\include
-	LDFLAGS+= $(NEKOPATH)\neko.dll
-	CCFLAGS+= -D _WINDOWS
-	LDFLAGS+= -static-libgcc -static-libstdc++
+	CCFLAGS+= -I$(NEKOPATH)\include -D _WINDOWS
+	LDFLAGS+= $(NEKOPATH)\neko.dll -static-libgcc -static-libstdc++
 else
 	ifeq ($(PLATFORM), Linux64)
 		CCFLAGS+= -fPIC
 	endif
-	CCFLAGS+= -I$(NEKOPATH)/include
 # CCFLAGS+= -ggdb
+	CCFLAGS+= -I$(NEKOPATH)/include
 	LDFLAGS+= -L$(NEKOPATH) -lneko
 endif
 
@@ -64,7 +62,7 @@ install:
 test:
 	cd ../test; haxe test.hxml; cd bin; neko test.n
 
-cleanbuild: clean build
+cleanbuild: clean
 
 clean:
 	-rm -f $(OBJ_FILES)

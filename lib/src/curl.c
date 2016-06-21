@@ -3,6 +3,7 @@
 
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include <curl/curlbuild.h>
 #include <neko.h>
 
 #define STRINGIFY(x) #x
@@ -220,7 +221,7 @@ DEFINE_PRIM(hxcurl_error, 1);
 
 value hxcurl_init( )
 {
-	int res;
+	//int res;
 
 	value curl_handle = alloc_abstract(k_curl_handle, alloc(sizeof(hxcurl_handle)));
 	hxcurl_handle *handle = val_data(curl_handle);
@@ -415,6 +416,8 @@ value hxcurl_setheader( value curl_handle, value s )
 	hxcurl_handle *handle = val_data(curl_handle);
 
 	handle->headers = curl_slist_append(handle->headers, val_string(s));
+
+	return val_true;
 }
 DEFINE_PRIM(hxcurl_setheader, 2);
 

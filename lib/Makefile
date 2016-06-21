@@ -1,5 +1,5 @@
-include Makefile-platform
-include Makefile-ndll
+include Makefile-platform.mk
+include Makefile-ndll.mk
 
 PROJECT=necurl
 
@@ -11,9 +11,9 @@ ifeq ($(PLATFORM), $(filter $(PLATFORM), Windows Windows64))
 # https://curl.haxx.se/gknw.net/7.40.0/dist-w32/curl-7.40.0-devel-mingw32.zip
     CURLPATH=dep\libcurl32
   endif
-	CCFLAGS+= -I $(NEKOPATH)\include -I $(CURLPATH)\include
+	CCFLAGS+= -I $(CURLPATH)\include
   #LDFLAGS+= -L$(NEKOPATH)
-	LDFLAGS+= $(CURLPATH)\bin\libcurl.dll
+	LDFLAGS+= -L$(CURLPATH)\bin -lcurl
 else
 	LDFLAGS+= -lcurl
 endif
