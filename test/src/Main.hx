@@ -2,7 +2,7 @@
  * ...
  * @author Const
  */
-import necurl.Necurl;
+import necurl.*;
 
 
 class Main

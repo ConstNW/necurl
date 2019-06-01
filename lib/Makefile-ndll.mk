@@ -71,7 +71,7 @@ clean:
 $(OBJ_FILES): | $(OBJ_DIR)
 
 $(OBJ_DIR):
-	mkdir -p obj
+	mkdir -p $(OBJ_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CCFLAGS) -c -o $@ $<

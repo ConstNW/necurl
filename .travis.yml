@@ -1,23 +1,32 @@
-sudo: false
 language: haxe
-haxe: 3.2.1
-neko: 2.1.0
 os:
-- linux
-- osx
+  - linux
+  - osx
+
+sudo: false
+dist: trusty
+
+haxe:
+  - "3.2.1"
+  - development
+
+# neko: 2.1.0
+
 addons:
   apt:
     packages:
-    - libcurl4-openssl-dev
+      - libcurl4-openssl-dev
+
 script:
-- pushd lib
-- make all
-- popd
+  - pushd lib
+  - make all
+  - popd
+
 after_success:
-- pushd lib
-- make install
-- make test
-- popd
+  - pushd lib
+  - make install
+  - make test
+  - popd
 
 #deploy:
 #  provider: releases

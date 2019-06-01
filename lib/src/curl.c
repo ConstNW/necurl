@@ -3,7 +3,6 @@
 
 #include <curl/curl.h>
 #include <curl/easy.h>
-#include <curl/curlbuild.h>
 #include <neko.h>
 
 #define STRINGIFY(x) #x
@@ -20,7 +19,7 @@ typedef enum {
     CALLBACK_PROGRESS,
     CALLBACK_DEBUG,
     CALLBACK_LAST
-} hxcurl_callback_code;
+} necurl_callback_code;
 
 typedef struct {
 	CURL *curl;
@@ -39,14 +38,14 @@ typedef struct {
     /* copy of error buffer var for caller*/
     char errbuf[CURL_ERROR_SIZE+1];
 
-} hxcurl_handle;
+} necurl_handle;
 
 
 // *******************************************
 void setOptFormField( value v, field f, void *_form )
 {
-	hxcurl_handle *handle;
-	handle = (hxcurl_handle *)_form;
+	necurl_handle *handle;
+	handle = (necurl_handle *)_form;
 
 	if (val_is_string(v))
 	{
@@ -76,8 +75,8 @@ size_t writeMemoryCallback( void *contents, size_t size, size_t nmemb, void *use
 {
 	size_t realsize = size * nmemb;
 
-	hxcurl_handle *handle;
-	handle = (hxcurl_handle *)userp;
+	necurl_handle *handle;
+	handle = (necurl_handle *)userp;
 
 	buffer_append_sub(handle->b, contents, realsize);
 	/*
@@ -104,8 +103,8 @@ size_t write_callback_func( void *contents, size_t size, size_t nmemb, void *str
 {
 	size_t realsize = size * nmemb;
 
-    hxcurl_handle *handle;
-    handle = (hxcurl_handle *)stream;
+    necurl_handle *handle;
+    handle = (necurl_handle *)stream;
 
 	value fn = handle->callback[CALLBACK_WRITE];
 	if( fn != NULL && val_is_function(fn) )
@@ -121,8 +120,8 @@ size_t header_callback_func( void *contents, size_t size, size_t nmemb, void *st
 {
 	size_t realsize = size * nmemb;
 
-    hxcurl_handle *handle;
-    handle = (hxcurl_handle *)stream;
+    necurl_handle *handle;
+    handle = (necurl_handle *)stream;
 
 	value fn = handle->callback[CALLBACK_HEADER];
 	if( fn != NULL && val_is_function(fn) )
@@ -136,8 +135,8 @@ size_t header_callback_func( void *contents, size_t size, size_t nmemb, void *st
 /* read callback for calling a neko callback */
 size_t read_callback_func( void *ptr, size_t size, size_t nmemb, void *stream )
 {
-    hxcurl_handle *handle;
-    handle = (hxcurl_handle *)stream;
+    necurl_handle *handle;
+    handle = (necurl_handle *)stream;
 
     value s;
     size_t maxlen;
@@ -168,8 +167,8 @@ size_t read_callback_func( void *ptr, size_t size, size_t nmemb, void *stream )
 /* Progress callback for calling a perl callback */
 int progress_callback_func( void *clientp, double dltotal, double dlnow, double ultotal, double ulnow )
 {
-    hxcurl_handle *handle;
-    handle = (hxcurl_handle *)clientp;
+    necurl_handle *handle;
+    handle = (necurl_handle *)clientp;
 
     value args[4] = { alloc_int(dltotal), alloc_int(dlnow), alloc_int(ultotal), alloc_int(ulnow) };
 
@@ -185,8 +184,8 @@ int progress_callback_func( void *clientp, double dltotal, double dlnow, double 
 /* debug callback for calling a neko callback */
 size_t debug_callback_func( CURL* curl, int type, char *debug_data, size_t size, void *stream )
 {
-    hxcurl_handle *handle;
-    handle = (hxcurl_handle *)stream;
+    necurl_handle *handle;
+    handle = (necurl_handle *)stream;
 
 	value fn = handle->callback[CALLBACK_DEBUG];
 	if( fn != NULL && val_is_function(fn) )
@@ -198,33 +197,33 @@ size_t debug_callback_func( CURL* curl, int type, char *debug_data, size_t size,
 }
 // *******************************************
 
-value hxcurl_escape( value curl_handle, value str )
+value necurl_escape( value curl_handle, value str )
 {
 	val_check_kind(curl_handle, k_curl_handle);
 	val_check(str, string);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	return alloc_string(curl_easy_escape(handle->curl, val_string(str), val_strlen(str)));
 }
-DEFINE_PRIM(hxcurl_escape, 2);
+DEFINE_PRIM(necurl_escape, 2);
 
-value hxcurl_error(value curl_handle)
+value necurl_error(value curl_handle)
 {
 	val_check_kind(curl_handle, k_curl_handle);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	return alloc_string(handle->errbuf);
 }
-DEFINE_PRIM(hxcurl_error, 1);
+DEFINE_PRIM(necurl_error, 1);
 
-value hxcurl_init( )
+value necurl_init( )
 {
 	//int res;
 
-	value curl_handle = alloc_abstract(k_curl_handle, alloc(sizeof(hxcurl_handle)));
-	hxcurl_handle *handle = val_data(curl_handle);
+	value curl_handle = alloc_abstract(k_curl_handle, alloc(sizeof(necurl_handle)));
+	necurl_handle *handle = val_data(curl_handle);
 
 	handle->curl = curl_easy_init();
 	handle->write_cb = alloc_bool(false);
@@ -237,28 +236,28 @@ value hxcurl_init( )
 
 	return curl_handle;
 }
-DEFINE_PRIM(hxcurl_init, 0);
+DEFINE_PRIM(necurl_init, 0);
 
-value hxcurl_close( value curl_handle )
+value necurl_close( value curl_handle )
 {
 	val_check_kind(curl_handle, k_curl_handle);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	curl_easy_cleanup(handle->curl);
 
 	return val_null;
 }
-DEFINE_PRIM(hxcurl_close, 1);
+DEFINE_PRIM(necurl_close, 1);
 
-value hxcurl_exec( value curl_handle )
+value necurl_exec( value curl_handle )
 {
 	int res;
 	value r;
 
 	val_check_kind(curl_handle, k_curl_handle);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	// handle->size = 0;
 	// handle->memory = (char *)malloc(1);
@@ -304,16 +303,16 @@ value hxcurl_exec( value curl_handle )
 
 	return r;
 }
-DEFINE_PRIM(hxcurl_exec, 1);
+DEFINE_PRIM(necurl_exec, 1);
 
-value hxcurl_setopt( value curl_handle, value opt, value v )
+value necurl_setopt( value curl_handle, value opt, value v )
 {
 	int i;
 
 	val_check_kind(curl_handle, k_curl_handle);
 	val_match_or_fail(opt, int);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	if (val_int(opt) == CURLOPT_POSTFIELDS)
 	{
@@ -333,7 +332,7 @@ value hxcurl_setopt( value curl_handle, value opt, value v )
 		}
 		else
 		{
-			val_throw(alloc_string("hxcurl_setopt CURLOPT_POSTFIELDS: unsupported values.\n"));
+			val_throw(alloc_string("necurl_setopt CURLOPT_POSTFIELDS: unsupported values.\n"));
 		}
 	}
 	else
@@ -372,7 +371,7 @@ value hxcurl_setopt( value curl_handle, value opt, value v )
 		}
 		else
 		{
-			val_throw(alloc_string("hxcurl_setopt HTTPHEADER: Array<String> expected.\n"));
+			val_throw(alloc_string("necurl_setopt HTTPHEADER: Array<String> expected.\n"));
 		}
 	}
 	else
@@ -400,28 +399,28 @@ value hxcurl_setopt( value curl_handle, value opt, value v )
 		}
 		else
 		{
-			val_throw(alloc_string("hxcurl_setopt: TYPE NOT SUPPORTED!\n"));
+			val_throw(alloc_string("necurl_setopt: TYPE NOT SUPPORTED!\n"));
 		}
 	}
 
 	return val_true;
 }
-DEFINE_PRIM(hxcurl_setopt, 3);
+DEFINE_PRIM(necurl_setopt, 3);
 
-value hxcurl_setheader( value curl_handle, value s )
+value necurl_setheader( value curl_handle, value s )
 {
 	val_check_kind(curl_handle, k_curl_handle);
 	val_check(s, string);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	handle->headers = curl_slist_append(handle->headers, val_string(s));
 
 	return val_true;
 }
-DEFINE_PRIM(hxcurl_setheader, 2);
+DEFINE_PRIM(necurl_setheader, 2);
 
-value hxcurl_getinfo( value curl_handle, value opt )
+value necurl_getinfo( value curl_handle, value opt )
 {
 	int option;
 	value ret;
@@ -429,7 +428,7 @@ value hxcurl_getinfo( value curl_handle, value opt )
 	val_check_kind(curl_handle, k_curl_handle);
 	val_match_or_fail(opt, int);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	option = val_int(opt);
 	switch(option & CURLINFO_TYPEMASK)
@@ -456,22 +455,22 @@ value hxcurl_getinfo( value curl_handle, value opt )
 			break;
 		}
 		default: {
-			ret = alloc_string("hxcurl_getinfo: BAD_CURL_INFO");
+			ret = alloc_string("necurl_getinfo: BAD_CURL_INFO");
 			val_throw(ret);
 			break;
 		}
 	}
 	return ret;
 }
-DEFINE_PRIM(hxcurl_getinfo, 2);
+DEFINE_PRIM(necurl_getinfo, 2);
 
-value hxcurl_set_cb_base( value curl_handle, value fn_read, value fn_write )
+value necurl_set_cb_base( value curl_handle, value fn_read, value fn_write )
 {
 	val_check_kind(curl_handle, k_curl_handle);
 	val_check_function(fn_read , 1);
 	val_check_function(fn_write, 1);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	handle->write_cb = alloc_bool(true);
 
@@ -486,15 +485,15 @@ value hxcurl_set_cb_base( value curl_handle, value fn_read, value fn_write )
 
 	return val_null;
 }
-DEFINE_PRIM(hxcurl_set_cb_base, 3);
+DEFINE_PRIM(necurl_set_cb_base, 3);
 
-value hxcurl_set_cb_ext( value curl_handle, value fn_header, value fn_progress )
+value necurl_set_cb_ext( value curl_handle, value fn_header, value fn_progress )
 {
 	val_check_kind(curl_handle, k_curl_handle);
 	val_check_function(fn_header, 1);
 	val_check_function(fn_progress, 4);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	handle->callback[CALLBACK_HEADER] = fn_header;
 	handle->callback[CALLBACK_PROGRESS] = fn_progress;
@@ -509,14 +508,14 @@ value hxcurl_set_cb_ext( value curl_handle, value fn_header, value fn_progress )
 
 	return val_null;
 }
-DEFINE_PRIM(hxcurl_set_cb_ext, 3);
+DEFINE_PRIM(necurl_set_cb_ext, 3);
 
-value hxcurl_set_cb_debug( value curl_handle, value fn_debug )
+value necurl_set_cb_debug( value curl_handle, value fn_debug )
 {
 	val_check_kind(curl_handle, k_curl_handle);
 	val_check_function(fn_debug, 2);
 
-	hxcurl_handle *handle = val_data(curl_handle);
+	necurl_handle *handle = val_data(curl_handle);
 
 	handle->callback[CALLBACK_DEBUG] = fn_debug;
 
@@ -526,11 +525,11 @@ value hxcurl_set_cb_debug( value curl_handle, value fn_debug )
 
 	return val_null;
 }
-DEFINE_PRIM(hxcurl_set_cb_debug, 2);
+DEFINE_PRIM(necurl_set_cb_debug, 2);
 
 //********************************************************* Share
 /* make a new share */
-value hxcurl_share_init( )
+value necurl_share_init( )
 {
     CURLSH *curl_share = curl_share_init();
 
@@ -538,9 +537,9 @@ value hxcurl_share_init( )
 
     return ret;
 }
-DEFINE_PRIM(hxcurl_share_init, 0);
+DEFINE_PRIM(necurl_share_init, 0);
 
-value hxcurl_share_setopt( value curl_share, value opt, value v )
+value necurl_share_setopt( value curl_share, value opt, value v )
 {
 	int res;
 	int option;
@@ -565,14 +564,14 @@ value hxcurl_share_setopt( value curl_share, value opt, value v )
 	//return alloc_int(res);
 	return val_null;
 }
-DEFINE_PRIM(hxcurl_share_setopt, 3);
+DEFINE_PRIM(necurl_share_setopt, 3);
 
 /* delete the share */
-value hxcurl_share_delete( value curl_share )
+value necurl_share_delete( value curl_share )
 {
 	val_check_kind(curl_share, k_curl_share);
 
 	curl_share_cleanup(val_data(curl_share));
 	return val_null;
 }
-DEFINE_PRIM(hxcurl_share_delete, 1);
+DEFINE_PRIM(necurl_share_delete, 1);

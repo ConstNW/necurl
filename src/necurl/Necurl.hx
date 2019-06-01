@@ -4,8 +4,9 @@
  */
 package necurl;
 
+import necurl.NecurlException;
+
 import haxe.ds.StringMap;
-import necurl.NecurlException.NecurlExecException;
 import neko.Lib;
 import neko.NativeString;
 
@@ -271,65 +272,6 @@ class CurlOpt
 	public static inline var PINNEDPUBLICKEY = TYPE_OBJECTPOINT + 230;
 }
 
-class NecurlCase
-{
-	public static function request(method:String, url:String, ?data:Dynamic, ?headers:Array<String>) : String
-	{
-		var curl = new Necurl();
-		
-		if (data != null && method.toLowerCase() == "get")
-		{
-			url += url.indexOf("?") >= 0 ? "&" : "?" + Lambda.map(Reflect.fields(data), function(fieldName) { 
-				var fieldValue = Reflect.field(data, fieldName);
-				return StringTools.urlEncode(fieldName) + "=" + StringTools.urlEncode(fieldValue);
-			}).join("&");
-		}
-		
-		curl.setopt(CurlOpt.URL, url);
-		
-		//curl.setopt(CurlOpt.SSL_VERIFYPEER, false);
-		
-		curl.setopt(CurlOpt.SSL_VERIFYPEER, false);
-		curl.setopt(CurlOpt.VERBOSE, false);
-		curl.setopt(CurlOpt.NOPROGRESS, true);
-		curl.setopt(CurlOpt.USERAGENT, 'Necurl');
-		
-		
-		curl.setopt(CurlOpt.ACCEPT_ENCODING, 'gzip');
-		
-		if (data != null && method.toLowerCase() == "post")
-		{
-			curl.setopt(CurlOpt.POST, true);
-			curl.setopt(CurlOpt.POSTFIELDS, data);
-		}
-		
-		if (headers != null)
-		{
-			curl.setopt(CurlOpt.HTTPHEADER, headers);
-		}
-		
-		#if debug
-		curl.setopt(CurlOpt.PROXY, '192.168.1.2');
-		curl.setopt(CurlOpt.PROXYPORT, 8888);
-		#end
-		
-		var response = curl.exec();
-		
-		curl.close();
-		
-		return response;
-	}
-	
-	public static function get(url:String, ?data:Dynamic, ?headers:Array<String>) : String
-	{
-		return request("get", url, data, headers);
-	}
-	
-	public static function post(url:String, ?data:Dynamic, ?headers:Array<String>) : String
-	{
-		return request("post", url, data, headers);
-	}
-}
 
 class Necurl
 {
@@ -355,12 +297,12 @@ class Necurl
 	
 	function init( ) : Void
 	{
-		h = hxcurl_init();
+		h = necurl_init();
 		
 		/*
-		hxcurl_set_cb_base(h, readCb, writeCb);
-		hxcurl_set_cb_ext(h, headerCb, progressCb);
-		hxcurl_set_cb_debug(h, debugCb);
+		necurl_set_cb_base(h, readCb, writeCb);
+		necurl_set_cb_ext(h, headerCb, progressCb);
+		necurl_set_cb_debug(h, debugCb);
 		*/
 		
 		#if debug
@@ -380,13 +322,13 @@ class Necurl
 		head = new StringMap();
 		var s : String = null;
 		
-		try s = NativeString.toString(hxcurl_exec(h)) catch ( e : Dynamic )
+		try s = NativeString.toString(necurl_exec(h)) catch ( e : Dynamic )
 		{
 			throw new NecurlExecException(Std.string(e));
 		}
 		
 		/*
-		var code = hxcurl_exec(h);
+		var code = necurl_exec(h);
 		if ( code != 0 )
 		{
 			// error happen
@@ -448,40 +390,40 @@ class Necurl
 	public function close( ) : Void
 	{
 		if ( h == null ) return;
-		hxcurl_close(h);
+		necurl_close(h);
 		h = null;
 	}
 	
 	public function setheader( s : String ) : Void
 	{
 		if ( h == null ) throw new NecurlException('Not initialized');
-		hxcurl_setheader(h, NativeString.ofString(s));
+		necurl_setheader(h, NativeString.ofString(s));
 	}
 	public function setopt( option : Int, value : Dynamic ) : Void
 	{
 		if ( h == null ) throw new NecurlException('Not initialized');
 		var v = Lib.haxeToNeko(value);
-		hxcurl_setopt(h, option, v);
+		necurl_setopt(h, option, v);
 	}
 	public function getinfo<A>( info : Int ) : A
 	{
 		if ( h == null ) throw new NecurlException('Not initialized');
 		
-		return Lib.haxeToNeko(hxcurl_getinfo(h, info));
+		return Lib.haxeToNeko(necurl_getinfo(h, info));
 	}
 	
 	public function error( ) : String
 	{
 		if ( h == null ) throw new NecurlException('Not initialized');
 		
-		return Lib.nekoToHaxe(hxcurl_error(h));
+		return Lib.nekoToHaxe(necurl_error(h));
 	}
 	
 	public function escape( s : String ) : String
 	{
 		if ( h == null ) throw new NecurlException('Not initialized');
 		
-		return NativeString.toString(hxcurl_escape(h, NativeString.ofString(s)));
+		return NativeString.toString(necurl_escape(h, NativeString.ofString(s)));
 	}
 	
 	public function encodeParams( p : Dynamic ) : String
@@ -515,69 +457,21 @@ class Necurl
 	
 	inline public function handler( ) return h;
 	
-	private static var hxcurl_init = Lib.load("necurl", "hxcurl_init", 0);
-	private static var hxcurl_close = Lib.load("necurl", "hxcurl_close", 1);
-	private static var hxcurl_setopt = Lib.load("necurl", "hxcurl_setopt", 3);
-	private static var hxcurl_exec = Lib.load("necurl", "hxcurl_exec", 1);
+	private static var necurl_init = Lib.load("necurl", "necurl_init", 0);
+	private static var necurl_close = Lib.load("necurl", "necurl_close", 1);
+	private static var necurl_setopt = Lib.load("necurl", "necurl_setopt", 3);
+	private static var necurl_exec = Lib.load("necurl", "necurl_exec", 1);
 	
-	private static var hxcurl_setheader = Lib.load("necurl", "hxcurl_setheader", 2);
+	private static var necurl_setheader = Lib.load("necurl", "necurl_setheader", 2);
 	
-	private static var hxcurl_error = Lib.load("necurl", "hxcurl_error", 1);
-	private static var hxcurl_escape = Lib.load("necurl", "hxcurl_escape", 2);
-	private static var hxcurl_getinfo = Lib.load("necurl", "hxcurl_getinfo", 2);
+	private static var necurl_error = Lib.load("necurl", "necurl_error", 1);
+	private static var necurl_escape = Lib.load("necurl", "necurl_escape", 2);
+	private static var necurl_getinfo = Lib.load("necurl", "necurl_getinfo", 2);
 	
-	private static var hxcurl_set_cb_base = Lib.load("necurl", "hxcurl_set_cb_base", 3);
-	private static var hxcurl_set_cb_ext = Lib.load("necurl", "hxcurl_set_cb_ext", 3);
-	private static var hxcurl_set_cb_debug = Lib.load("necurl", "hxcurl_set_cb_debug", 2);
+	private static var necurl_set_cb_base = Lib.load("necurl", "necurl_set_cb_base", 3);
+	private static var necurl_set_cb_ext = Lib.load("necurl", "necurl_set_cb_ext", 3);
+	private static var necurl_set_cb_debug = Lib.load("necurl", "necurl_set_cb_debug", 2);
 }
 
 // Share
 
-class NecurlShare
-{
-	// CURLSHoption
-	public inline static var SHARE = 1;
-	public inline static var UNSHARE = 1;
-	
-	var h : Dynamic;
-	
-	public function new( )
-	{
-		h = null;
-		
-		var ex = 'initializing curl_share failed';
-		try init() catch ( e : Dynamic )
-		{
-			ex += ' [$e]';
-		}
-		
-		if ( h == null )
-			throw ex;
-	}
-	
-	function init( ) : Void
-	{
-		h = hxcurl_share_init();
-	}
-	
-	public function setopt( value : Int, unshare = false ) : Void
-	{
-		hxcurl_share_setopt(h, (unshare ? UNSHARE : SHARE), Lib.haxeToNeko(value));
-	}
-	
-	public function close( ) : Void
-	{
-		hxcurl_share_delete(h);
-	}
-	
-	public function add( n : Necurl ) : Void
-	{
-		hxcurl_setopt(n.handler(), CurlOpt.SHARE, h);
-	}
-	
-	private static var hxcurl_share_init = Lib.load("necurl", "hxcurl_share_init", 0);
-	private static var hxcurl_share_setopt = Lib.load("necurl", "hxcurl_share_setopt", 3);
-	private static var hxcurl_share_delete = Lib.load("necurl", "hxcurl_share_delete", 1);
-	
-	private static var hxcurl_setopt = Lib.load("necurl", "hxcurl_setopt", 3);
-}
