@@ -4,9 +4,9 @@
   "license": "MIT",
   "tags": ["neko", "necurl", "curl"],
   "description": "",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "classPath": "src/",
-  "releasenote": "Initial release, everything is working correctly.",
+  "releasenote": "Updated version, everything is working correctly.",
   "contributors": ["constnw"],
   "dependencies": {
   }
